@@ -1,4 +1,4 @@
-import chokidar from "chokidar";
+import chokidar, { type FSWatcher } from "chokidar";
 import type { PostStore } from "./content.js";
 import type { SearchIndex } from "./search.js";
 
@@ -13,7 +13,7 @@ export function createWatcher(
   searchIndex: SearchIndex,
   onChange?: () => void
 ): Watcher {
-  let watcher: chokidar.FSWatcher | null = null;
+  let watcher: FSWatcher | null = null;
 
   function rebuildIndex(): void {
     searchIndex.rebuild(store.getAll());
