@@ -1,6 +1,7 @@
 # Markdown CMS
 
 [![CI](https://github.com/pavel-genai/markdown-cms/actions/workflows/ci.yml/badge.svg)](https://github.com/pavel-genai/markdown-cms/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/pavel-genai/markdown-cms/branch/main/graph/badge.svg)](https://codecov.io/gh/pavel-genai/markdown-cms)
 
 A flat-file content management system built with TypeScript and Node.js. Content is stored as Markdown files with YAML frontmatter and served as rendered HTML through an Express API.
 
