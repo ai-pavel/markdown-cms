@@ -4,7 +4,14 @@ import { createSearchIndex } from "./search.js";
 import { createWatcher } from "./watcher.js";
 import { createApp } from "./server.js";
 
-const PORT = parseInt(process.env.PORT ?? "3000", 10);
+const rawPort = process.env.PORT ?? "3000";
+const PORT = Number(rawPort);
+if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+  console.error(
+    `Invalid PORT "${rawPort}": expected an integer between 1 and 65535.`
+  );
+  process.exit(1);
+}
 const CONTENT_DIR = process.env.CONTENT_DIR ?? path.resolve("content");
 
 const store = createPostStore(CONTENT_DIR);

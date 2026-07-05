@@ -148,6 +148,32 @@ describe("Express App", () => {
     });
   });
 
+  describe("unknown routes", () => {
+    it("returns a styled 404 for an unmatched path", async () => {
+      const app = createApp(store, searchIndex);
+      const res = await request(app).get("/does/not/exist");
+      expect(res.status).toBe(404);
+      expect(res.type).toBe("text/html");
+      expect(res.text).toContain("Page not found");
+    });
+  });
+
+  describe("error handling", () => {
+    it("returns a styled 500 without a stack trace when a handler throws", async () => {
+      const throwingStore: PostStore = {
+        ...createMockStore(posts),
+        getByTag: () => {
+          throw new Error("boom");
+        },
+      };
+      const app = createApp(throwingStore, searchIndex);
+      const res = await request(app).get("/tags/alpha");
+      expect(res.status).toBe(500);
+      expect(res.text).toContain("Internal Server Error");
+      expect(res.text).not.toContain("boom");
+    });
+  });
+
   describe("GET /tags/:tag", () => {
     it("returns posts filtered by tag", async () => {
       const app = createApp(store, searchIndex);
