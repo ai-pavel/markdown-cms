@@ -20,7 +20,9 @@ export function createApp(store: PostStore, searchIndex: SearchIndex) {
       return;
     }
     const results = searchIndex.search(q);
-    res.type("html").send(renderPostList(results, `Search results for "${q}"`));
+    res
+      .type("html")
+      .send(renderPostList(results, `Search results for "${q}"`, q));
   });
 
   // Posts by tag

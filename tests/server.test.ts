@@ -96,6 +96,14 @@ describe("Express App", () => {
       expect(res.status).toBe(200);
       expect(res.text).toContain("All Posts");
     });
+
+    it("renders a search form pointing at /search", async () => {
+      const app = createApp(store, searchIndex);
+      const res = await request(app).get("/posts");
+      expect(res.status).toBe(200);
+      expect(res.text).toContain('action="/search"');
+      expect(res.text).toContain('name="q"');
+    });
   });
 
   describe("GET /posts/:slug", () => {
@@ -124,6 +132,14 @@ describe("Express App", () => {
       expect(res.status).toBe(200);
       expect(res.text).toContain("Search results for");
       expect(res.text).toContain("first");
+    });
+
+    it("pre-fills the search box with the submitted query", async () => {
+      searchIndex = createMockSearchIndex([posts[0]]);
+      const app = createApp(store, searchIndex);
+      const res = await request(app).get("/search?q=first");
+      expect(res.status).toBe(200);
+      expect(res.text).toContain('value="first"');
     });
 
     it("returns empty results for blank query", async () => {

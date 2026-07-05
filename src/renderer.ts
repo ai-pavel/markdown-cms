@@ -40,16 +40,37 @@ export function renderPost(post: Post): string {
 </html>`;
 }
 
-export function renderPostList(posts: Post[], heading: string): string {
+export function renderPostList(
+  posts: Post[],
+  heading: string,
+  query = ""
+): string {
   const listItems = posts
     .map(
-      (p) =>
-        `<li>
+      (p) => {
+        const tagsHtml = p.tags
+          .map(
+            (t) =>
+              `<a class="tag" href="/tags/${encodeURIComponent(
+                t
+              )}">${escapeHtml(t)}</a>`
+          )
+          .join(" ");
+        return `<li>
       <a href="/posts/${encodeURIComponent(p.slug)}">${escapeHtml(p.title)}</a>
       <span class="meta">${escapeHtml(p.date)}</span>
-    </li>`
+      ${tagsHtml ? `<span class="tags">${tagsHtml}</span>` : ""}
+    </li>`;
+      }
     )
     .join("\n");
+
+  const searchForm = `<form class="search" action="/search" method="get">
+    <input type="search" name="q" placeholder="Search posts..." value="${escapeHtml(
+      query
+    )}">
+    <button type="submit">Search</button>
+  </form>`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -60,6 +81,11 @@ export function renderPostList(posts: Post[], heading: string): string {
   <style>
     body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; color: #333; }
     .meta { color: #666; font-size: 0.85rem; margin-left: 0.5rem; }
+    .tags { margin-left: 0.5rem; }
+    .tag { background: #e0e7ff; color: #3730a3; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; text-decoration: none; }
+    .search { margin: 1rem 0; }
+    .search input { padding: 0.4rem; width: 60%; }
+    .search button { padding: 0.4rem 0.8rem; }
     ul { list-style: none; padding: 0; }
     li { padding: 0.5rem 0; border-bottom: 1px solid #eee; }
     a { color: #2563eb; text-decoration: none; }
@@ -68,6 +94,7 @@ export function renderPostList(posts: Post[], heading: string): string {
 </head>
 <body>
   <h1>${escapeHtml(heading)}</h1>
+  ${searchForm}
   <ul>${listItems}</ul>
 </body>
 </html>`;
