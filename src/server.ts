@@ -3,6 +3,23 @@ import type { PostStore } from "./content.js";
 import type { SearchIndex } from "./search.js";
 import { renderPost, renderPostList } from "./renderer.js";
 
+/**
+ * Read a single-value string from an Express query parameter.
+ *
+ * Express parses a repeated parameter (e.g. `?q=a&q=b`) into an array and a
+ * nested one (e.g. `?q[x]=1`) into an object, so an unchecked `as string`
+ * cast is a runtime lie. This coerces arrays to their first string element
+ * and anything else to `""`, so callers can safely use string methods.
+ */
+function singleQueryParam(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) {
+    const first = value[0];
+    return typeof first === "string" ? first : "";
+  }
+  return "";
+}
+
 export function createApp(store: PostStore, searchIndex: SearchIndex) {
   const app = express();
 
@@ -14,7 +31,7 @@ export function createApp(store: PostStore, searchIndex: SearchIndex) {
 
   // Search posts
   app.get("/search", (req, res) => {
-    const q = (req.query.q as string) ?? "";
+    const q = singleQueryParam(req.query.q);
     if (!q.trim()) {
       res.type("html").send(renderPostList([], `Search results for ""`));
       return;

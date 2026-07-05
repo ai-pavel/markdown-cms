@@ -140,6 +140,14 @@ describe("Express App", () => {
       expect(res.text).toContain("Search results for &quot;&quot;");
     });
 
+    it("does not crash when q is a repeated query parameter", async () => {
+      searchIndex = createMockSearchIndex([posts[0]]);
+      const app = createApp(store, searchIndex);
+      const res = await request(app).get("/search?q=a&q=b");
+      expect(res.status).toBe(200);
+      expect(res.text).toContain("Search results for");
+    });
+
     it("handles whitespace-only query", async () => {
       const app = createApp(store, searchIndex);
       const res = await request(app).get("/search?q=%20%20%20");
